@@ -22,7 +22,6 @@ import couponRoute from "./coupon.route";
 import megaMenuRoute from "./mega-menu.route";
 import faqQuestionAnswerRoute from "./faq-question-answer.route";
 import shippingChargeRoute from "./shipping-charge.route";
-import excelExportRoute from "./excel-export.route";
 import aboutUsRoute from "./about-us.route";
 import filtersRoute from "./filters.route";
 import storeAddressRoute from "./store-address.route";
@@ -52,7 +51,6 @@ export default () => {
   megaMenuRoute(app);
   faqQuestionAnswerRoute(app);
   shippingChargeRoute(app);
-  excelExportRoute(app);
   aboutUsRoute(app);
   filtersRoute(app)
   storeAddressRoute(app)
