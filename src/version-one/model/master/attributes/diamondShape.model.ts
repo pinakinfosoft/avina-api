@@ -1,7 +1,7 @@
 import { DATE, INTEGER, JSON, STRING } from "sequelize";
 import dbContext from "../../../../config/db-context";
-import { Image } from "../../../image.model";
-import { ProductDiamondOption } from "../../../product-diamond-option.model";
+import { Image } from "../../image.model";
+import { ProductDiamondOption } from "../../product-diamond-option.model";
 import { DiamondGroupMaster } from "./diamond-group-master.model";
 
 export const DiamondShape = dbContext.define("diamond_shapes", {

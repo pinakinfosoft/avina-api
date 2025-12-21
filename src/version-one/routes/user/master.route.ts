@@ -1,14 +1,6 @@
 import { Router } from "express";
 import {
   configuratorDropDownDataFn,
-  dashboardAPIFn,
-  publicConfiguratorDropDownDataFn,
-  updateBirthstoneProductTitleSlugFn,
-  updateConfiguratorMasterDataFn,
-  allMasterListDataFn,
-  pageListForDropdownFn,
-  updateImageForSideSettingForConfigFn,
-  getSideSettingImageForConfigFn,
   addProductDropdownFn,
 } from "../../controllers/masters/master.controller";
 

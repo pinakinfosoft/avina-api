@@ -2,10 +2,8 @@ import { BOOLEAN, DATE, INTEGER, SMALLINT, STRING } from "sequelize";
 import dbContext from "../../config/db-context";
 import { Role } from "./role.model";
 import { CartProducts } from "./cart-product.model";
-import { ConfigCartProduct } from "./config-cart-product.model";
 import { CustomerUser } from "./customer-user.model";
 import { BusinessUser } from "./business-user.model";
-import { CouponData } from "./coupon.model";
 
 export const AppUser = dbContext.define("app_users", {
   id: {
@@ -87,6 +85,5 @@ export const AppUser = dbContext.define("app_users", {
 // Associations
 AppUser.belongsTo(Role, { foreignKey: "id_role", as: "role" });
 AppUser.hasMany(CartProducts, { foreignKey: "user_id", as: "users_details" });
-AppUser.hasMany(ConfigCartProduct, { foreignKey: "user_id", as: "user_detail" });
 AppUser.hasOne(CustomerUser, { foreignKey: "id_app_user", as: "customer_user" });
 AppUser.hasOne(BusinessUser, { foreignKey: "id_app_user", as: "business_users" });

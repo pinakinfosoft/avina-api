@@ -46,7 +46,7 @@ export const addGoldKarat = async (req: Request) => {
       }
       let idImage = null;
       if (req.file) {
-        const addImage: any = await imageAddAndEditInDBAndS3(req,
+        const addImage: any = await imageAddAndEditInDBAndS3(
           req.file,
           IMAGE_TYPE.goldKT,
           req.body.session_res.id_app_user,
@@ -244,12 +244,12 @@ export const updateGoldKarat = async (req: Request) => {
         });
       }
       if (req.file) {
-        const imageData = await imageAddAndEditInDBAndS3(req,
+        const imageData = await imageAddAndEditInDBAndS3(
           req.file,
           IMAGE_TYPE.goldKT,
           req.body.session_res.id_app_user,
           findImage,
-        );
+          );
 
         if (imageData.code !== DEFAULT_STATUS_CODE_SUCCESS) {
           await trn.rollback();

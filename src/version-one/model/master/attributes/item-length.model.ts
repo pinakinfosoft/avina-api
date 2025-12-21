@@ -1,6 +1,6 @@
 import { INTEGER, STRING, DATE } from "sequelize";
 import dbContext from "../../../../config/db-context";
-import { ProductMetalOption } from "../../../product-metal-option.model";
+import { ProductMetalOption } from "../../product-metal-option.model";
 
 export const LengthData = dbContext.define("items_lengths", {
   id: {

@@ -1,8 +1,8 @@
 import { DATE, INTEGER, STRING } from "sequelize";
 import dbContext from "../../../../../config/db-context";
-import { Image } from "../../../../image.model";
-import { ProductMetalOption } from "../../../../product-metal-option.model";
-import { ProductImage } from "../../../../product-image.model";
+import { Image } from "../../../image.model";
+import { ProductMetalOption } from "../../../product-metal-option.model";
+import { ProductImage } from "../../../product-image.model";
 
 export const MetalTone = dbContext.define("metal_tones", {
   id: {

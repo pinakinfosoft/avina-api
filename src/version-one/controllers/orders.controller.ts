@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { callServiceMethod } from "./base.controller";
-import { addConfigProductOrder, addGiftSetProductOrder, addProductOrder, addProductWithPaypalOrder, configOrderDetailsAPI, deliveryStatusUpdate, getAllConfigOrdersUser, getAllGiftSetOrdersListAdmin, getAllGiftSetProductOrdersUser, getAllOrdersListAdmin, getAllOrdersUser, giftSetDeliveryStatusUpdate, giftSetOrderDetailsAPI, giftSetOrderDetailsAPIAdmin, giftSetOrderStatusUpdate, moveOrderToArchive, orderDetailsAPI, orderDetailsAPIAdmin, orderStatusUpdate, orderTransactionList } from "../services/orders.service";
+import { addProductOrder, addProductWithPaypalOrder, deliveryStatusUpdate, getAllOrdersListAdmin, getAllOrdersUser, moveOrderToArchive, orderDetailsAPI, orderDetailsAPIAdmin, orderStatusUpdate, orderTransactionList } from "../services/orders.service";
 
 export const addProductOrderFn: RequestHandler = (req, res) => {
     callServiceMethod(req, res, addProductOrder(req), "addProductOrderFn");
@@ -36,50 +36,6 @@ export const deliveryStatusUpdateFn: RequestHandler = (req, res) => {
 
 export const orderTransactionListFn: RequestHandler = (req, res) => {
     callServiceMethod(req, res, orderTransactionList(req), "orderTransactionListFn");
-}
-
-//////////-----   gift set order ------------////////////
-
-export const addGiftSetProductOrderFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, addGiftSetProductOrder(req), "addGiftSetProductOrderFn");
-}
-
-export const getAllGiftSetProductOrdersUserFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, getAllGiftSetProductOrdersUser(req), "getAllGiftSetProductOrdersUserFn");
-}
-
-export const giftSetOrderDetailsAPIFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, giftSetOrderDetailsAPI(req), "giftSetOrderDetailsAPI");
-}
-
-export const giftSetOrderStatusUpdateFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, giftSetOrderStatusUpdate(req), "giftSetOrderStatusUpdateFn");
-}
-
-export const giftSetDeliveryStatusUpdateFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, giftSetDeliveryStatusUpdate(req), "giftSetDeliveryStatusUpdateFn");
-}
-
-export const getAllGiftSetOrdersListAdminFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, getAllGiftSetOrdersListAdmin(req), "getAllGiftSetOrdersListAdminFn");
-}
-
-export const giftSetOrderDetailsAPIAdminFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, giftSetOrderDetailsAPIAdmin(req), "giftSetOrderDetailsAPIAdminFn");
-}
-
-///////////--------config product ----------------///////////
-
-export const addConfigProductOrderFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, addConfigProductOrder(req), "addConfigProductOrderFn");
-}
-
-export const getAllConfigOrdersUserFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, getAllConfigOrdersUser(req), "getAllConfigOrdersUserFn");
-}
-
-export const configOrderDetailsAPIFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, configOrderDetailsAPI(req), "configOrderDetailsAPIFn");
 }
 
 

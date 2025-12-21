@@ -40,7 +40,6 @@ import { BrandData } from "../../../model/master/attributes/brands.model";
 import { Collection } from "../../../model/master/attributes/collection.model";
 import { Orders } from "../../../model/order.model";
 import { Enquiries } from "../../../model/enquiries.model";
-import { BirthStoneProduct } from "../../../model/birth-stone-product/birth-stone-product.model";
 import { HeadsData } from "../../../model/master/attributes/heads.model";
 import { ShanksData } from "../../../model/master/attributes/shanks.model";
 import { SideSettingStyles } from "../../../model/master/attributes/side-setting-styles.model";
@@ -1332,30 +1331,5 @@ export const convertImageToWebpAPI = async (req: Request) => {
   } catch (error) {
     resUnknownError({ data: error });
     throw error;
-  }
-};
-
-export const updateBirthstoneProductTitleSlug = async (req: Request) => {
-  const { product_details } = req.body;
-  try {
-    for (let index = 0; index < product_details.length; index++) {
-      const element = product_details[index];
-      const slug = element.name
-        .toLowerCase()
-        .replaceAll(" ", "-")
-        .replaceAll(/['/|]/g, "-");
-      const birthStoneProduct = await BirthStoneProduct.update(
-        {
-          name: element.name,
-          slug: slug,
-        },
-        { where: { style_no: element.style_no, is_deleted: DeletedStatus.No } }
-      );
-    }
-
-    return resSuccess();
-  } catch (error) {
-    // throw error
-    return resUnknownError({ data: error });
   }
 };

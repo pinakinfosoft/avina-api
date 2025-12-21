@@ -1,6 +1,6 @@
 import { DATE, DOUBLE, FLOAT, INTEGER, JSON, STRING } from "sequelize";
 import dbContext from "../../../../config/db-context";
-import { Image } from "../../../image.model";
+import { Image } from "../../image.model";
 import { DiamondShape } from "./diamondShape.model";
 import { StoneData } from "./gemstones.model";
 import { MMSizeData } from "./mmSize.model";
@@ -9,7 +9,7 @@ import { Colors } from "./colors.model";
 import { CutsData } from "./cuts.model";
 import { SieveSizeData } from "./seiveSize.model";
 import { DiamondCaratSize } from "./caratSize.model";
-import { ProductDiamondOption } from "../../../product-diamond-option.model";
+import { ProductDiamondOption } from "../../product-diamond-option.model";
 
 export const DiamondGroupMaster = dbContext.define("diamond_group_masters", {
   id: {

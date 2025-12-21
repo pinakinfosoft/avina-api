@@ -137,28 +137,6 @@ export const decryptCompanyInfoKeyForParams: RequestHandler = async (
         .send(resUnknownError({ data: "Invalid company key" }));
     }
 
-    // Parse decrypted company key (assuming it's JSON)
-    let companyKey: string;
-    try {
-      companyKey = JSON.parse(decryptedCompanyKey);
-    } catch {
-      // If not JSON, use as-is
-      companyKey = decryptedCompanyKey;
-    }
-
-    // Update params with decrypted company key
-    req.params.company_key = companyKey;
-
-    // For public API access, set db_connection to null (single database instance)
-    const authHeader = req.headers.authorization;
-    if (
-      authHeader &&
-      typeof authHeader === "string" &&
-      authHeader === PUBLIC_AUTHORIZATION_TOKEN
-    ) {
-      dbContext = null;
-    }
-
     return next();
   } catch (error) {
     return res

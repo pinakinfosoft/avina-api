@@ -13,6 +13,7 @@ import {
   resUnknownError,
 } from "../utils/shared-functions";
 import { MulterCustomError } from "../helpers/custom-error.helper";
+import dbContext from "../config/db-context";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -49,11 +50,9 @@ interface IMulterField {
  */
 const preserveRequestData = (req: IExtendedRequest): {
   session_res?: unknown;
-  db_connection?: unknown;
 } => {
   return {
     session_res: req.body.session_res,
-    db_connection: dbContext,
   };
 };
 
@@ -67,7 +66,6 @@ const restoreRequestData = (
   preservedData: { session_res?: unknown; db_connection?: unknown }
 ): void => {
   req.body["session_res"] = preservedData.session_res;
-  req.body["db_connection"] = preservedData.db_connection;
 };
 
 /**
@@ -352,11 +350,6 @@ export const reqAnyTypeImageAnyFormat = (): RequestHandler => {
           return res
             .status(DEFAULT_STATUS_CODE_ERROR)
             .send(resUnknownError({ data: err }));
-        }
-
-        // Restore session and connection if they existed
-        if (preservedData.session_res || preservedData.db_connection) {
-          restoreRequestData(req, preservedData);
         }
 
         return next();

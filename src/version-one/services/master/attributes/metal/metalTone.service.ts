@@ -64,7 +64,7 @@ export const addMetalTone = async (req: Request) => {
     try {
       let idImage = null;
       if (req.file) {
-        const addImage: any = await imageAddAndEditInDBAndS3(req,
+        const addImage: any = await imageAddAndEditInDBAndS3(
           req.file,
           IMAGE_TYPE.goldKT,
           req.body.session_res.id_app_user,
@@ -265,7 +265,7 @@ export const updateMetalTone = async (req: Request) => {
         });
       }
       if (req.file) {
-        const imageData = await imageAddAndEditInDBAndS3(req,
+        const imageData = await imageAddAndEditInDBAndS3(
           req.file,
           IMAGE_TYPE.metalTone,
           req.body.session_res.id_app_user,

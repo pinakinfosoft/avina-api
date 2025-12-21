@@ -26,7 +26,6 @@ import {
   wishlistCartListCount,
   searchProductGlobally,
   editproductApi,
-  getBySKUConfigProductDetails,
   addProductWithVariant,
   getAllProductImageNamePublicAPI,
   getAllProductSlug,
@@ -59,29 +58,18 @@ import {
   moveProductCartToWishlist,
 } from "../services/product-wishlist.service";
 import {
-  addToCartConfigProductAPI,
   addToCartProductAPI,
-  cartConfigProductListByUSerId,
   cartProductListByUSerId,
   cartProductListgustCheckOut,
   deleteCartProduct,
   getCartProductListData,
 } from "../services/cart-product.service";
-import {
-  addConfigProductsFromCSVFile,
-  addConfigProductsOneCombinationFromCSVFile,
-  configProductDetailsAPIForAdmin,
-  configProductPriceFind,
-  configProductListInAdmin,
-  threeStoneConfigProductlistInAdmin,
-} from "../services/config-product-bulk.service";
 import { addVariantProductsFromCSVFile } from "../services/product-bulk-upload-with-variant.service";
 import { addProductImageCSVFile } from "../services/product-image-bulk-upload.service";
 import { addChooseSettingProductsFromCSVFile } from "../services/variant-product-bulk-upload-with-choose-setting.service";
 import { addDynamicChooseSettingProductsFromCSVFile } from "../services/dynamic-product-bulk-upload-with-choose-setting.service";
 import { addDynamicChooseSettingWithFixedMetalProductsFromCSVFile } from "../services/dynamic-product-bulk-uload-with-fixed-metal-choose-setting.service";
 import { addBETDynamicChooseSettingProductsFromCSVFile } from "../services/dynamic-product-bet-product-like-hld-choose-setting-center-diamond-logic-chnage-bulk-upload.service";
-import { addCADCOProductDetailsForClient, getCADCOProductDetailsForClient } from "../services/product-move-cadco-client.service";
 
 export const getAllProductFn: RequestHandler = (req, res) => {
   callServiceMethod(req, res, getAllProduct(req), "getAllProductFn");
@@ -337,97 +325,6 @@ export const searchProductGloballyFn: RequestHandler = (req, res) => {
     "searchProductGloballyFn"
   );
 };
-
-////////////--- config product -----//////////////////
-
-export const addConfigProductBulkFn: RequestHandler = (req, res) => {
-  callServiceMethod(
-    req,
-    res,
-    addConfigProductsFromCSVFile(req),
-    "addConfigProductBulkFn"
-  );
-};
-
-export const configProductPriceFindFn: RequestHandler = (req, res) => {
-  callServiceMethod(
-    req,
-    res,
-    configProductPriceFind(req),
-    "configProductPriceFindFn"
-  );
-};
-
-export const configProductListInAdminFn: RequestHandler = (req, res) => {
-  callServiceMethod(
-    req,
-    res,
-    configProductListInAdmin(req),
-    "configProductListInAdminFn"
-  );
-};
-export const configProductDetailsAPIForAdminFn: RequestHandler = (req, res) => {
-  callServiceMethod(
-    req,
-    res,
-    configProductDetailsAPIForAdmin(req),
-    "configProductDetailsAPIForAdminFn"
-  );
-};
-export const threeStoneConfigProductlistInAdminFn: RequestHandler = (
-  req,
-  res
-) => {
-  callServiceMethod(
-    req,
-    res,
-    threeStoneConfigProductlistInAdmin(req),
-    "threeStoneConfigProductlistInAdminFn"
-  );
-};
-
-export const addToCartConfigProductAPIFn: RequestHandler = (req, res) => {
-  callServiceMethod(
-    req,
-    res,
-    addToCartConfigProductAPI(req),
-    "addToCartConfigProductAPIFn"
-  );
-};
-
-export const cartConfigProductListByUSerIdFn: RequestHandler = (req, res) => {
-  callServiceMethod(
-    req,
-    res,
-    cartConfigProductListByUSerId(req),
-    "cartConfigProductListByUSerIdFn"
-  );
-};
-/* New Config product add API */
-
-export const addConfigProductsOneCombinationFromCSVFileFn: RequestHandler = (
-  req,
-  res
-) => {
-  callServiceMethod(
-    req,
-    res,
-    addConfigProductsOneCombinationFromCSVFile(req),
-    "addConfigProductsOneCombinationFromCSVFileFn"
-  );
-};
-
-/* config product find based on sku */
-
-export const getBySKUConfigProductDetailsFn: RequestHandler = (req, res) => {
-  callServiceMethod(
-    req,
-    res,
-    getBySKUConfigProductDetails(req),
-    "getBySKUConfigProductDetailsFn"
-  );
-};
-
 /* product add and edit with variant data and without variant --- single product and watch product manage in one */
 
 export const addProductWithVariantFn: RequestHandler = (req, res) => {
@@ -685,11 +582,3 @@ export const bulkUploadSampleFileColumnsFn: RequestHandler = (req, res) => {
 export const updateRingConfiguratorProductHeadNumberFn: RequestHandler = (req, res) => {
   callServiceMethod(req, res, updateRingConfiguratorProductHeadNumber(req), "updateRingConfiguratorProductHeadNumberFn");
 };
-
-export const getCADCOProductDetailsForClientFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, getCADCOProductDetailsForClient(req), "getCADCOProductDetailsForClientFn");
-}
-
-export const addCADCOProductDetailsForClientFn: RequestHandler = (req, res) => {
-    callServiceMethod(req, res, addCADCOProductDetailsForClient(req), "addCADCOProductDetailsForClientFn");
-}

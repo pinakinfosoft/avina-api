@@ -32,22 +32,13 @@ import {
   addProductsZipFileFn,
   searchProductGloballyFn,
   editproductApiFn,
-  addConfigProductBulkFn,
   cartProductListgustCheckOutFn,
-  configProductPriceFindFn,
-  configProductListInAdminFn,
-  addToCartConfigProductAPIFn,
-  cartConfigProductListByUSerIdFn,
-  addConfigProductsOneCombinationFromCSVFileFn,
-  getBySKUConfigProductDetailsFn,
   addProductWithVariantFn,
   addVariantProductsFromCSVFileFn,
   addVariantProductIntoWishListFn,
   getVariantProductWishlistByUserIdFn,
   deleteVariantProductWishListFn,
   getAllProductImageNamePublicAPIFn,
-  threeStoneConfigProductlistInAdminFn,
-  configProductDetailsAPIForAdminFn,
   getAllProductSlugFn,
   addProductImageCSVFileFn,
   similarProductListFn,
@@ -69,7 +60,6 @@ import {
   addDynamicChooseSettingWithFixedMetalProductsFromCSVFileFn,
   getProductsBasedOnTheSettingStyleFn,
   addBETDynamicChooseSettingProductsFromCSVFileFn,
-  getCADCOProductDetailsForClientFn,
 } from "../../controllers/product.controller";
 import {
   authorization,
@@ -208,30 +198,6 @@ export default (app: Router) => {
 
   app.post("/product/review/list",[authorization], getProductReviewByProductIDFn);
 
-  /////////////---- config product----/////////////////////
-
-  app.post(
-    "/product/config/add",
-    [authorization, reqProductBulkUploadFileParser("config_csv")],
-    addConfigProductBulkFn
-  );
-
-  app.get(
-    "/config/product/list",
-    [authorization],
-    configProductListInAdminFn
-  );
-  app.get(
-    "/config/product/:id",
-    [authorization],
-    configProductDetailsAPIForAdminFn
-  );
-  app.get(
-    "/three-stone/product/list",
-    [authorization],
-    threeStoneConfigProductlistInAdminFn
-  );
-
 
   /* single product add with variant */
 
@@ -311,7 +277,4 @@ export default (app: Router) => {
   app.post("/image-upload/product/metalTone", [authorization], productMetalToneListFn);
   app.get("/varriant/product/:id", [authorization], getProductByIdFn);
 
-  // get CADCO product detail for the add new data for the client
-  
-  app.post("/product/cadco-design", [authorization], getCADCOProductDetailsForClientFn);
 };

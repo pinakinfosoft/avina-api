@@ -1,16 +1,16 @@
 import { DATE, DOUBLE, INTEGER, STRING } from "sequelize";
 import dbContext from "../../../config/db-context";
-import { Image } from "../../image.model";
-import { CategoryData } from "../../category.model";
-import { Collection } from "../../master/attributes/collection.model";
-import { SettingTypeData } from "../../master/attributes/settingType.model";
-import { DiamondShape } from "../../master/attributes/diamondShape.model";
-import { BrandData } from "../../master/attributes/brands.model";
-import { MetalMaster } from "../../master/attributes/metal/metal-master.model";
-import { MetalTone } from "../../master/attributes/metal/metalTone.model";
-import { StaticPageData } from "../../static_page.model";
+import { Image } from "../image.model";
+import { CategoryData } from "../category.model";
+import { Collection } from "../master/attributes/collection.model";
+import { SettingTypeData } from "../master/attributes/settingType.model";
+import { DiamondShape } from "../master/attributes/diamondShape.model";
+import { BrandData } from "../master/attributes/brands.model";
+import { MetalMaster } from "../master/attributes/metal/metal-master.model";
+import { MetalTone } from "../master/attributes/metal/metalTone.model";
+import { StaticPageData } from "../static_page.model";
 import { MegaMenus } from "./mega_menu.model";
-import { PageData } from "../../pages.model";
+import { PageData } from "../pages.model";
 
 export const MegaMenuAttributes = dbContext.define("mega_menu_attributes", {
   id: {

@@ -27,6 +27,7 @@ import {
 } from "../../utils/shared-functions";
 import { CategoryData } from "../model/category.model";
 import { Image } from "../model/image.model";
+import dbContext from "../../config/db-context";
 
 // export const addCategory = async (req: Request) => {
 //     const {parent_id ,name, position, slug, created_by } = req.body
@@ -80,7 +81,6 @@ export const addCategory = async (req: Request) => {
       const moveFileResult = await moveFileToS3ByType(
         req.file,
         IMAGE_TYPE.category,
-        null
       );
 
       if (moveFileResult.code !== DEFAULT_STATUS_CODE_SUCCESS) {
@@ -147,7 +147,7 @@ export const addCategory = async (req: Request) => {
 
       const category = await CategoryData.create(payload, { transaction: trn });
 
-      await addActivityLogs(req,null,[{
+      await addActivityLogs([{
         old_data: null,
         new_data: {
           category_id: category?.dataValues?.id, data: {
@@ -337,7 +337,6 @@ export const updateCategory = async (req: Request) => {
       const moveFileResult = await moveFileToS3ByType(
         req.file,
         IMAGE_TYPE.category,
-        null
       );
 
       if (moveFileResult.code !== DEFAULT_STATUS_CODE_SUCCESS) {
@@ -414,7 +413,7 @@ export const updateCategory = async (req: Request) => {
           where: { id: CategoryId.dataValues.id_image },
           transaction: trn,
         });
-        await imageDeleteInDBAndS3(req,findImage,null);
+        await imageDeleteInDBAndS3(findImage);
       }
 
       if (CategoryInfo) {
@@ -423,7 +422,7 @@ export const updateCategory = async (req: Request) => {
           transaction: trn,
         });
 
-        await addActivityLogs(req,null,[{
+        await addActivityLogs([{
           old_data: { category_id: CategoryId?.dataValues?.id, data: {...CategoryId?.dataValues} },
           new_data: {
             category_id: CategoryInformation?.dataValues?.id, data: {...CategoryInformation?.dataValues }
@@ -484,7 +483,7 @@ export const deleteCategory = async (req: Request) => {
       }
     );
 
-    await addActivityLogs(req,null,[{
+    await addActivityLogs([{
       old_data: { category_id: CategoryExists?.dataValues?.id, data: {...CategoryExists?.dataValues} },
       new_data: {
         category_id: CategoryExists?.dataValues?.id, data: {
@@ -516,7 +515,7 @@ export const statusUpdateCategory = async (req: Request) => {
         { where: { id: CategoryExists.dataValues.id } }
       );
       if (CategoryActionInfo) {
-        await addActivityLogs(req,null,[{
+        await addActivityLogs([{
           old_data: { category_id: CategoryExists?.dataValues?.id, data: {...CategoryExists?.dataValues} },
           new_data: {
             category_id: CategoryExists?.dataValues?.id, data: {
@@ -553,7 +552,7 @@ export const searchablesCategory = async (req: Request) => {
         { where: { id: CategoryExists.dataValues.id } }
       );
       if (CategoryActionInfo) {
-        await addActivityLogs(req,null,[{
+        await addActivityLogs([{
           old_data: { category_id: CategoryExists?.dataValues?.id, data: {...CategoryExists?.dataValues} },
           new_data: {
             category_id: CategoryExists?.dataValues?.id, data: {

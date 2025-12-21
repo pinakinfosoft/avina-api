@@ -1,6 +1,6 @@
 import { DATE, INTEGER, JSON, STRING } from "sequelize";
 import dbContext from "../../../../config/db-context";
-import { Image } from "../../../image.model";
+import { Image } from "../../image.model";
 
 export const ShanksData = dbContext.define("shanks", {
   id: {

@@ -71,7 +71,6 @@ import { CurrencyData } from "../version-one/model/master/currency.model";
 import { ActivityLogs } from "../version-one/model/activity-logs.model";
 import { EmailTemplate } from "../version-one/model/email-template.model";
 import { Invoices } from "../version-one/model/invoices.model";
-import { FontStyleFiles } from "../version-one/model/theme/font-style-files.model";
 import { CompanyInfo } from "../version-one/model/companyinfo.model";
 import { WebConfigSetting } from "../version-one/model/theme/web-config-setting.model";
 import { PriceCorrection } from "../version-one/model/price-correction.model";
@@ -413,7 +412,6 @@ export const imageAddAndEditInDBAndS3 = async (
 };
 
 export const imageAddAndEditInDBAndS3ForOriginalFileName = async (
-  req: any,
   file: any,
   folder: any,
   created_by: any,
@@ -1053,44 +1051,7 @@ export const generateInvoicePDF = async(data:any, template:any, replacements:any
   }
 }
 
-export const fontFileAddAndEditInDBAndS3ForOriginalFileName = async (
-  file: any,
-  folder: any,
-  created_by: any,
-  fileData: any,
-) => {
-  try {
-    if (!fileData) {
-      const moveFileResult = await moveFileToS3ByTypeAndLocation(file, folder);
 
-      if (moveFileResult.code !== DEFAULT_STATUS_CODE_SUCCESS) {
-        return moveFileResult;
-      }
-
-      const fileResult = await FontStyleFiles.create({
-        file_path: moveFileResult.data,
-        created_by: created_by,
-        created_date: getLocalDate(),
-        is_deleted: DeletedStatus.No,
-      });
-      return resSuccess({ data: { id: fileResult.dataValues.id, file_path: fileResult.dataValues.file_path } });
-    } else {
-      if (fileData && fileData.dataValues && fileData.dataValues.id !== 0) {
-        await s3RemoveObject(fileData.dataValues.file_path);
-        await FontStyleFiles.update({
-          is_deleted: DeletedStatus.yes,
-          deleted_by: created_by,
-          deleted_date: getLocalDate()
-        }, { where: { id: fileData.dataValues.id
-        } });
-      }
-
-      return resSuccess({ data: null })
-    }
-  } catch (error) {
-    return resUnknownError({ data: error });
-  }
-};
 export const convertImageUrlToDataURL = async (imageUrl) => {
   try {
     const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });

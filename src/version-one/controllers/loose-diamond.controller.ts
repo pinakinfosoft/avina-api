@@ -4,7 +4,6 @@ import {
   addLooseDiamondCSVFile,
   addLooseDiamondImages,
   deleteDiamond,
-  getAllDiamonds,
   getAllMasterDataForLooseDiamond,
   looseDiamondAdminList,
   looseDiamondDetailsForAdmin,
@@ -70,10 +69,6 @@ export const getLooseDiamondDetailFn: RequestHandler = (req, res) => {
 
 export const getAllMasterDataForLooseDiamondFn: RequestHandler = (req, res) => {
   callServiceMethod(req, res, getAllMasterDataForLooseDiamond(req), "getAllMasterDataForLooseDiamondFn");
-};
-
-export const getAllDiamondsFn: RequestHandler = (req, res) => {
-  callServiceMethod(req, res, getAllDiamonds(req), "getAllDiamondsFn");
 };
 
 export const addLooseDiamondFn: RequestHandler = (req, res) => {

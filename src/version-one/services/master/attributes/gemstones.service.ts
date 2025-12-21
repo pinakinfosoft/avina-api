@@ -411,7 +411,7 @@ export const statusUpdateForStone = async (req: Request) => {
   }
 };
 
-export const getStoneListAPI = async () => {
+export const getStoneListAPI = async (req:any) => {
   try {
     
     const stoneList = await StoneData.findAll({

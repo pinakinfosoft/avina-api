@@ -98,7 +98,6 @@ import { MenuItem } from "../model/menu-items.model";
 import { RoleApiPermission } from "../model/role-api-permission.model";
 import { Action } from "../model/action.model";
 import { ProductBulkUploadFile } from "../model/product-bulk-upload-file.model";
-import { ConfigProduct } from "../model/config-product.model";
 import { AppUser } from "../model/app-user.model";
 import { CompanyInfo } from "../model/companyinfo.model";
 import { Role } from "../model/role.model";

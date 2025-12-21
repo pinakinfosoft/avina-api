@@ -31,7 +31,6 @@ import {
   statusUpdateForCurrencyFn,
   statusUpdateForStateFn,
   statusUpdateForTaxFn,
-  updateBirthstoneProductTitleSlugFn,
   updateCityFn,
   updateCountryFn,
   updateCurrencyFn,

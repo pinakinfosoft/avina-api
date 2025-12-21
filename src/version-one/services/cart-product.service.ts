@@ -38,7 +38,6 @@ import {
 import { AppUser } from "../model/app-user.model";
 import { Product } from "../model/product.model";
 import { CartProducts } from "../model/cart-product.model";
-import { ConfigCartProduct } from "../model/config-cart-product.model";
 import { MetalTone } from "../model/master/attributes/metal/metalTone.model";
 import { ProductImage } from "../model/product-image.model";
 import { ProductMetalOption } from "../model/product-metal-option.model";
@@ -50,10 +49,10 @@ import { DiamondShape } from "../model/master/attributes/diamondShape.model";
 import { CustomerUser } from "../model/customer-user.model";
 import { CouponData } from "../model/coupon.model";
 import { TaxMaster } from "../model/master/tax.model";
-import { ConfigProduct } from "../model/config-product.model";
 import { Image } from "../model/image.model";
 import { moveFileToS3ByType } from "../../helpers/file.helper";
 import { applyOfferWithBuyNewOneGetOne } from "./apply-offer-buy-with-new.service";
+import dbContext from "../../config/db-context";
 const crypto = require("crypto");
 
 export const addToCartProductAPI = async (req: Request) => {
@@ -103,7 +102,7 @@ export const addToCartProductAPI = async (req: Request) => {
       created_date: getLocalDate(),
     });
 
-    await addActivityLogs(req, null, [{
+    await addActivityLogs([{
       old_data: null,
       new_data: {
         address_id: addToCartProduct?.dataValues?.id, data: {
@@ -116,11 +115,9 @@ export const addToCartProductAPI = async (req: Request) => {
       where: { user_id: user_id },
     });
 
-    const config_cart_list_count = await ConfigCartProduct.count({
-      where: { user_id: user_id },
-    });
 
-    const totalCartCount = cart_list_count + config_cart_list_count;
+
+    const totalCartCount = cart_list_count ;
 
     return resSuccess({ data: totalCartCount });
   } catch (error) {
@@ -344,7 +341,7 @@ export const deleteCartProduct = async (req: Request) => {
     }
     const afterDelete = await CartProducts.findAll({ where: { user_id: user_id } });
 
-    await addActivityLogs(req, null, [{
+    await addActivityLogs([{
       old_data: { data: beforDelete?.map((t) => t?.dataValues) },
       new_data: {
         data: afterDelete?.map((t) => t?.dataValues)
@@ -405,7 +402,7 @@ export const getCartProductListData = async (req: Request) => {
             ),
           ],
         }
-        : 
+        : {}
     ];
 
     if (!noPagination) {
@@ -1138,13 +1135,13 @@ WHERE birthstone_PMO.id = "variant_id") WHEN "product_type" = ${AllProductTypes.
       let data = element
       let price = 0
       if (data.dataValues.product_type === AllProductTypes.Config_Ring_product) {
-       price = await getRingConfigProductPriceForCart(req, data.dataValues.product_id, data.dataValues.is_band)
+       price = await getRingConfigProductPriceForCart( data.dataValues.product_id, data.dataValues.is_band)
       } else if (data.dataValues.product_type === AllProductTypes.Three_stone_config_product) {
-        price = await getThreeStoneConfigProductPriceForCart(req, data.dataValues.product_id, data.dataValues.is_band)
+        price = await getThreeStoneConfigProductPriceForCart(data.dataValues.product_id, data.dataValues.is_band)
       } else if (data.dataValues.product_type === AllProductTypes.Eternity_product) {
-        price = await getEternityConfigProductPrice(req, data.dataValues.product_id)
+        price = await getEternityConfigProductPrice(data.dataValues.product_id)
       } else if (data.dataValues.product_type === AllProductTypes.BraceletConfigurator) {
-        price = await getBraceletConfigProductPrice(req, data.dataValues.product_id)
+        price = await getBraceletConfigProductPrice(data.dataValues.product_id)
       } else {
         price = data.dataValues.product_price
       } 
@@ -1170,7 +1167,7 @@ WHERE birthstone_PMO.id = "variant_id") WHEN "product_type" = ${AllProductTypes.
     for (let index = 0; index < cartProductListNew.length; index++) {
       const element = cartProductListNew[index];
       const productType = await getProductTypeForPriceCorrection(element.dataValues.product_type, element.dataValues.single_product_type)
-      const price = await formatPriceWithoutSeparator(element.dataValues.product_price, null, productType, req)
+      const price = await formatPriceWithoutSeparator(element.dataValues.product_price, productType)
       amountList.push(price)
     }
 
@@ -1187,7 +1184,6 @@ WHERE birthstone_PMO.id = "variant_id") WHEN "product_type" = ${AllProductTypes.
             cart_list: cartProductListNew,
             cart_total_quantity: cart_list_count
           },
-          null
     )
     let cartProducts = []
     for (let index = 0; index < applyDiscount.data.cart_list.length; index++) {
@@ -1272,7 +1268,7 @@ WHERE birthstone_PMO.id = "variant_id") WHEN "product_type" = ${AllProductTypes.
     
         let shippingChargeValue: any = 0;
         let shippingChargeWithoutFormate: any = 0;
-        const shippingCharge = await applyShippingCharge(dbContext, amount, req?.query);
+        const shippingCharge = await applyShippingCharge( amount, req?.query);
         if (shippingCharge.code !== DEFAULT_STATUS_CODE_SUCCESS) {
           shippingChargeValue = 0;
           shippingChargeWithoutFormate = 0
@@ -1304,292 +1300,6 @@ WHERE birthstone_PMO.id = "variant_id") WHEN "product_type" = ${AllProductTypes.
             cart_list: cartProducts,
           },
         });
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const addToCartConfigProductAPI = async (req: Request) => {
-  try {
-    const {
-      user_id,
-      product_id,
-      metal_id,
-      karat_id,
-      metal_tone_id,
-      ring_size,
-      center_diamond_group_id,
-      SKU,
-      is_band,
-    } = req.body;
-    const userExit = await AppUser.findOne({
-      where: { id: user_id, is_deleted: DeletedStatus.No },
-    });
-    const productExit = await ConfigProduct.findOne({
-      where: { id: product_id, is_deleted: DeletedStatus.No },
-    });
-    if (user_id && user_id != null) {
-      if (!(userExit && userExit.dataValues)) {
-        return resNotFound({ message: USER_NOT_FOUND });
-      }
-    }
-    if (!(productExit && productExit.dataValues)) {
-      return resNotFound({ message: PRODUCT_NOT_FOUND });
-    }
-
-    const configProductExists = await ConfigCartProduct.findOne({
-      where: { user_id: user_id, product_id: { [Op.eq]: product_id } },
-    });
-
-    if (configProductExists && configProductExists.dataValues) {
-      return resErrorDataExit();
-    }
-
-    const id = crypto.randomBytes(20).toString("hex");
-
-    let imagePath = null;
-    if (req.file) {
-      const moveFileResult = await moveFileToS3ByType(
-        req.file,
-        IMAGE_TYPE.ConfigProduct,
-        null
-      );
-
-      if (moveFileResult.code !== DEFAULT_STATUS_CODE_SUCCESS) {
-        return moveFileResult;
-      }
-
-      imagePath = moveFileResult.data;
-    }
-
-    const trn = await dbContext.transaction();
-
-    try {
-      let idImage = null;
-      if (imagePath) {
-        const imageResult = await Image.create(
-          {
-            image_path: imagePath,
-            image_type: IMAGE_TYPE.ConfigProduct,
-            created_by: req.body.session_res.id_app_user,
-            created_date: getLocalDate(),
-          },
-          { transaction: trn }
-        );
-        idImage = imageResult.dataValues.id;
-      }
-
-      const confidProduct = await ConfigCartProduct.create({
-        id: id,
-        user_id: user_id,
-        product_id: product_id,
-        product_SKU: SKU,
-        quantity: 1,
-        id_image: idImage,
-        product_details: {
-          metal_id,
-          karat_id,
-          metal_tone_id,
-          size: ring_size,
-          center_diamond_group_id,
-          is_band,
-        },
-        created_date: getLocalDate(),
-      });
-
-      await addActivityLogs(req, null, [{
-        old_data: null,
-        new_data: {
-          config_product_id: confidProduct?.dataValues?.id, data: {
-            ...confidProduct?.dataValues
-          }
-        }
-      }], confidProduct?.dataValues?.id, LogsActivityType.Add, LogsType.CartProduct, req?.body?.session_res?.id_app_user)
-
-      const cart_list_count = await CartProducts.sum("quantity", {
-        where: { user_id: user_id },
-      });
-
-      const config_cart_list_count = await ConfigCartProduct.count({
-        where: { user_id: user_id },
-      });
-
-      const totalCartCount = cart_list_count + config_cart_list_count;
-
-      await trn.commit();
-      return resSuccess({ data: totalCartCount });
-    } catch (e) {
-      await trn.rollback();
-      throw e;
-    }
-  } catch (e) {
-    throw e;
-  }
-};
-
-export const cartConfigProductListByUSerId = async (req: Request) => {
-  const { user_id } = req.body;
-  try {
-    const userExit = await AppUser.findOne({
-      where: { id: user_id, is_deleted: DeletedStatus.No },
-    });
-    if (!(userExit && userExit.dataValues)) {
-      return resNotFound({ message: USER_NOT_FOUND });
-    }
-    const metal_tone = await MetalTone.findOne({
-      where: { sort_code: WHITE_METAL_TONE_SORT_CODE },
-    });
-
-    const cartProduct = await CartProducts.findAll({
-      where: { user_id: userExit.dataValues.id },
-      attributes: [
-        "id",
-        "user_id",
-        "product_id",
-        [Sequelize.literal("0"), "is_config"],
-        [Sequelize.literal("Product.name"), "product_title"],
-        [Sequelize.literal("Product.sku"), "product_sku"],
-        [
-          Sequelize.literal("product_details ->> 'metal_tone_id'"),
-          "product_slug",
-        ],
-        [
-          Sequelize.literal(
-            `(SELECT image_path FROM product_images WHERE id_product = "product_id" AND image_type = ${PRODUCT_IMAGE_TYPE.Feature} AND id_metal_tone = CASE WHEN product_details ->> 'metal_tone_id' = '' THEN ${metal_tone?.dataValues.id} ELSE CAST (product_details ->> 'metal_tone_id' AS integer) END  LIMIT 1 )`
-          ),
-          "product_image",
-        ],
-        [
-          Sequelize.literal(
-            `(SELECT size FROM items_sizes WHERE id = CAST (product_details ->> 'size' AS integer))`
-          ),
-          "product_size",
-        ],
-        [
-          Sequelize.literal(`CAST (product_details ->> 'metal_id' AS integer)`),
-          "metal_id",
-        ],
-        [
-          Sequelize.literal(`CAST (product_details ->> 'metal_id' AS integer)`),
-          "metal_tone_id",
-        ],
-        [Sequelize.literal(`product_details ->> 'karat_id' `), "karat_id"],
-        [
-          Sequelize.literal(
-            `(SELECT metal_masters.name FROM metal_masters WHERE metal_masters.id = CAST (product_details ->> 'metal_id' AS integer))`
-          ),
-          "product_metal",
-        ],
-        [
-          Sequelize.literal(
-            `(SELECT name FROM gold_kts WHERE id = CAST (product_details ->> 'karat_id' AS integer))`
-          ),
-          "product_karat",
-        ],
-        [
-          Sequelize.literal(
-            `(SELECT name FROM metal_tones WHERE id = CASE WHEN product_details ->> 'metal_tone_id' = '' THEN null ELSE CAST (product_details ->> 'metal_tone_id' AS integer) END)`
-          ),
-          "Metal_tone",
-        ],
-        [
-          Sequelize.literal(
-            `(SELECT length FROM items_lengths WHERE id = CAST (product_details ->> 'length' AS integer))`
-          ),
-          "product_length",
-        ],
-        [
-          Sequelize.literal(
-            `(SELECT  CASE WHEN PMO.id_karat IS NULL THEN(metal_master.metal_rate*PMO.metal_weight+making_charge+finding_charge+other_charge+(COALESCE(sum(DGM.rate*PDO.weight*PDO.count), 0))) ELSE (metal_master.metal_rate/metal_master.calculate_rate*gold_kts.calculate_rate*PMO.metal_weight+making_charge+finding_charge+other_charge+(COALESCE(sum(DGM.rate*PDO.weight*PDO.count), 0))) END FROM products LEFT OUTER JOIN product_metal_options AS PMO ON id_product = products.id LEFT OUTER JOIN product_diamond_options AS PDO ON PDO.id_product = products.id AND PDO.is_deleted = '0' LEFT OUTER JOIN metal_masters AS metal_master ON metal_master.id = PMO.id_metal LEFT OUTER JOIN diamond_group_masters AS DGM ON DGM.id = PDO.id_diamond_group LEFT OUTER JOIN gold_kts ON gold_kts.id = PMO.id_karat WHERE CASE WHEN PMO.id_karat IS NULL THEN products.id = "product_id" AND PMO.id_metal = CAST (product_details ->> 'metal_id' AS integer) ELSE products.id = "product_id" AND PMO.id_metal = CAST (product_details ->> 'metal_id' AS integer) AND PMO.id_karat = CAST (product_details ->> 'karat_id' AS integer) END GROUP BY metal_master.metal_rate, pmo.metal_weight, products.making_charge, products.finding_charge, products.other_charge,PMO.id_karat, gold_kts.calculate_rate)`
-          ),
-          "product_price",
-        ],
-      ],
-      include: [
-        {
-          model: Product,
-          as: "product",
-          required: false,
-          attributes: [],
-        },
-      ],
-    });
-
-    const configcartProduct = await ConfigCartProduct.findAll({
-      where: { user_id: userExit.dataValues.id },
-      attributes: [
-        "id",
-        "user_id",
-        "product_id",
-        [Sequelize.literal("1"), "is_config"],
-        [Sequelize.literal("config_Product.product_title"), "product_title"],
-        [Sequelize.literal("config_Product.sku"), "product_sku"],
-        [Sequelize.literal("config_Product.slug"), "product_slug"],
-        [Sequelize.literal("image.image_path"), "product_image"],
-        [
-          Sequelize.literal(
-            `(SELECT size FROM items_sizes WHERE id = CAST (product_details ->> 'size' AS integer))`
-          ),
-          "product_size",
-        ],
-        [
-          Sequelize.literal(
-            `(SELECT metal_masters.name FROM metal_masters WHERE metal_masters.id = CAST (product_details ->> 'metal_id' AS integer))`
-          ),
-          "product_metal",
-        ],
-        [
-          Sequelize.literal(
-            `(SELECT name FROM gold_kts WHERE id = CAST (product_details ->> 'karat_id' AS integer))`
-          ),
-          "product_karat",
-        ],
-        [
-          Sequelize.literal(
-            `(SELECT name FROM metal_tones WHERE id = CAST (product_details ->> 'metal_tone_id' AS integer))`
-          ),
-          "Metal_tone",
-        ],
-        [
-          Sequelize.literal(
-            `(SELECT length FROM items_lengths WHERE id = CAST (product_details ->> 'length' AS integer))`
-          ),
-          "product_length",
-        ],
-        [Sequelize.literal(`product_details ->> 'is_band'`), "is_band"],
-        [
-          Sequelize.literal(`CAST (product_details ->> 'metal_id' AS integer)`),
-          "metal_id",
-        ],
-        [
-          Sequelize.literal(`CAST (product_details ->> 'metal_id' AS integer)`),
-          "metal_tone_id",
-        ],
-        [Sequelize.literal(`product_details ->> 'karat_id' `), "karat_id"],
-        [
-          Sequelize.literal(
-            `(SELECT ((DGM.rate)+laber_charge+product_metal.metal_rate+COALESCE(product_diamond.diamond_rate, 0)) FROM config_products LEFT OUTER JOIN diamond_group_masters AS DGM ON config_products.center_diamond_group_id = DGM.id LEFT OUTER JOIN (SELECT config_product_id, CPMO.karat_id , CPMO.metal_id, CASE WHEN CPMO.karat_id IS NULL THEN (SUM(metal_wt*(metal_master.metal_rate))+COALESCE(sum(CPMO.labor_charge), 0)) ELSE  (SUM(metal_wt*(metal_master.metal_rate/metal_master.calculate_rate*gold_kts.calculate_rate))+COALESCE(sum(CPMO.labor_charge), 0))  END  AS metal_rate FROM config_product_metals AS CPMO LEFT OUTER JOIN metal_masters AS metal_master ON metal_master.id = CPMO.metal_id LEFT OUTER JOIN gold_kts ON gold_kts.id = CPMO.karat_id WHERE CASE WHEN ${`CAST (product_details ->> 'is_band' AS integer)`} = 1 THEN  CPMO.head_shank_band <> '' ELSE CPMO.head_shank_band <> 'band' END GROUP BY config_product_id, CPMO.karat_id, CPMO.metal_id) product_metal ON (config_products.id = product_metal.config_product_id ) LEFT OUTER JOIN (SELECT config_product_id, (COALESCE(sum(PDGM.rate*CPDO.dia_count), 0)) AS diamond_rate FROM config_product_diamonds AS CPDO LEFT OUTER JOIN diamond_group_masters AS PDGM ON CPDO.id_diamond_group = PDGM.id WHERE CASE WHEN ${`CAST (product_details ->> 'is_band' AS integer)`} = 1 THEN  CPDO.product_type <> '' ELSE CPDO.product_type <> 'band' END GROUP BY config_product_id) product_diamond ON (config_products.id = product_diamond.config_product_id ) WHERE config_products.id = "product_id")`
-          ),
-          "product_price",
-        ],
-      ],
-      include: [
-        {
-          model: ConfigProduct,
-          as: "config_product",
-          required: false,
-          attributes: [],
-        },
-        {
-          model: Image,
-          as: "image",
-          attributes: [],
-          required: false
-        },
-      ],
-    });
-
-    return resSuccess({ data: [...cartProduct, ...configcartProduct] });
   } catch (error) {
     throw error;
   }

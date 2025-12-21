@@ -26,6 +26,7 @@ import { TaxMaster } from "../model/master/tax.model";
 import { StaticPageData } from "../model/static_page.model";
 import { WebConfigSetting } from "../model/theme/web-config-setting.model";
 import { CurrencyData } from "../model/master/currency.model";
+import dbContext from "../../config/db-context";
 
 export const addCompanyInfo = async (req: Request) => {
   const {
@@ -78,7 +79,7 @@ export const addCompanyInfo = async (req: Request) => {
       created_by: req.body.session_res.id_app_user,
     };
     const companyInfoData = await CompanyInfo.create(payload);
-    await addActivityLogs(req,LOG_FOR_SUPER_ADMIN,[{
+    await addActivityLogs([{
       old_data: null,
       new_data: {
         companyinfo_id: companyInfoData?.dataValues?.id, data: {
@@ -122,7 +123,7 @@ export const updateCompanyInfo = async (req: Request) => {
   try {
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-    const companyInfo = await CompanyInfo.findOne({
+    const companyInfo:any = await CompanyInfo.findOne({
       where: { id: id },
     });
 
@@ -132,19 +133,17 @@ export const updateCompanyInfo = async (req: Request) => {
       let darkIdImage = null;
       if (files["dark_image"]) {
         let findImage = null;
-        if (CompanyInfo.dataValues.dark_id_image) {
+        if (companyInfo.dataValues.dark_id_image) {
           findImage = await Image.findOne({
-            where: { id: CompanyInfo.dataValues.dark_id_image },
+            where: { id: companyInfo.dataValues.dark_id_image },
             transaction: trn,
           });
         }
         const imageData = await imageAddAndEditInDBAndS3ForOriginalFileName(
-          req,
           files["dark_image"][0],
           IMAGE_TYPE.headerLogo,
           req.body.session_res.id_app_user,
           findImage,
-null
         );
 
         if (imageData.code !== DEFAULT_STATUS_CODE_SUCCESS) {
@@ -156,19 +155,17 @@ null
       let lightIdImage = null;
       if (files["light_image"]) {
         let findImage = null;
-        if (CompanyInfo.dataValues.light_id_image) {
+        if (companyInfo.dataValues.light_id_image) {
           findImage = await Image.findOne({
-            where: { id: CompanyInfo.dataValues.light_id_image },
+            where: { id: companyInfo.dataValues.light_id_image },
             transaction: trn,
           });
         }
         const imageData = await imageAddAndEditInDBAndS3ForOriginalFileName(
-          req,
           files["light_image"][0],
           IMAGE_TYPE.footerLogo,
           req.body.session_res.id_app_user,
           findImage,
-null
         );
 
         if (imageData.code !== DEFAULT_STATUS_CODE_SUCCESS) {
@@ -180,19 +177,17 @@ null
       let faviconIdImage = null;
       if (files["favicon_image"]) {
         let findImage = null;
-        if (CompanyInfo.dataValues.favicon_image) {
+        if (companyInfo.dataValues.favicon_image) {
           findImage = await Image.findOne({
-            where: { id: CompanyInfo.dataValues.favicon_image },
+            where: { id: companyInfo.dataValues.favicon_image },
             transaction: trn,
           });
         }
         const imageData = await imageAddAndEditInDBAndS3ForOriginalFileName(
-          req,
           files["favicon_image"][0],
           IMAGE_TYPE.FaviconImage,
           req.body.session_res.id_app_user,
           findImage,
-null
         );
         if (imageData.code !== DEFAULT_STATUS_CODE_SUCCESS) {
           await trn.rollback();
@@ -209,11 +204,11 @@ null
             company_phone: company_phone,
             copy_right: copy_right,
             sort_about: sort_about,
-            dark_id_image: darkIdImage || CompanyInfo.dataValues.dark_id_image,
+            dark_id_image: darkIdImage || companyInfo.dataValues.dark_id_image,
             light_id_image:
-              lightIdImage || CompanyInfo.dataValues.light_id_image,
+              lightIdImage || companyInfo.dataValues.light_id_image,
             favicon_image:
-              faviconIdImage || CompanyInfo.dataValues.favicon_image,
+              faviconIdImage || companyInfo.dataValues.favicon_image,
             web_link: web_link,
             facebook_link: facebook_link,
             insta_link: insta_link,
@@ -234,14 +229,14 @@ null
             modified_by: req.body.session_res.id_app_user,
           },
 
-          { where: { id: CompanyInfo.dataValues.id }, transaction: trn }
+          { where: { id: companyInfo.dataValues.id }, transaction: trn }
         );
         const updatedData = await CompanyInfo.findOne({
           where: { id: updatedCompanyInfo },
           transaction: trn,
         });
 
-        await addActivityLogs(req,LOG_FOR_SUPER_ADMIN,[{
+        await addActivityLogs([{
           old_data: { companyinfo_id: companyInfo?.dataValues?.id, data: companyInfo?.dataValues},
           new_data: {
             companyinfo_id: companyInfo?.dataValues?.id, data: { ...companyInfo?.dataValues, ...updatedData?.dataValues }
@@ -722,7 +717,7 @@ export const getCompanyInfoForAdmin = async (req: Request) => {
           is_deleted: DeletedStatus.No,
           is_active: ActiveStatus.Active,
         },
-        attribute: ["id", "currency", "code", "symbol", "thousand_token", "symbol_placement"]
+        attributes: ["id", "currency", "code", "symbol", "thousand_token", "symbol_placement"]
       })
       return resSuccess({
         data: {
@@ -749,7 +744,7 @@ export const updateWebRestrictURL = async (req: Request) => {
       { where: { key: req.params.key } }
     );
 
-    await addActivityLogs(req,LOG_FOR_SUPER_ADMIN,[{
+    await addActivityLogs([{
       old_data: { companyinfo_id: findexistingData?.dataValues?.id, web_restrict_url: findexistingData?.datavalues?.web_restrict_url},
       new_data: {
         companyinfo_id: findexistingData?.dataValues?.id, web_restrict_url: encryptResponseData(web_link)

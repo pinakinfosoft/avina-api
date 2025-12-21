@@ -251,7 +251,7 @@ export const statusUpdateForMetaData = async (req: Request) => {
   }
 };
 
-export const getMetaDataListForUser = async () => {
+export const getMetaDataListForUser = async (req: Request) => {
   try {
     const findMetaData = await MetaDataDetails.findAll({
       where: { is_deleted: DeletedStatus.No, is_active: ActiveStatus.Active },

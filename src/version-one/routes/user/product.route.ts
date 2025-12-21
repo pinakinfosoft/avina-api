@@ -14,11 +14,6 @@ import {
   wishlistCartListCountFn,
   searchProductGloballyFn,
   cartProductListgustCheckOutFn,
-  configProductPriceFindFn,
-  addToCartConfigProductAPIFn,
-  cartConfigProductListByUSerIdFn,
-  addConfigProductsOneCombinationFromCSVFileFn,
-  getBySKUConfigProductDetailsFn,
   addVariantProductIntoWishListFn,
   getVariantProductWishlistByUserIdFn,
   deleteVariantProductWishListFn,
@@ -122,17 +117,6 @@ export default (app: Router) => {
     searchProductGloballyFn
   );
 
-  /////////////---- config product----/////////////////////
-
-  app.post("/product/price/find", configProductPriceFindFn);
-
-  app.post(
-    "/config/product/cart/add",
-    [reqSingleImageParser("image")],
-    addToCartConfigProductAPIFn
-  );
-
-  // app.post("/config/product/cart/list", cartConfigProductListByUSerIdFn);
 
   /* new diamond master base One combination config product */
 
@@ -143,8 +127,6 @@ export default (app: Router) => {
   // );
 
   /* config product find based on sku */
-
-  app.get("/product/config/:slug", getBySKUConfigProductDetailsFn);
 
   /* ------------------- variant product wish list CRUD ----------------------- */
 

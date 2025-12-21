@@ -1,7 +1,7 @@
 import { INTEGER, STRING, DATE } from "sequelize";
 import dbContext from "../../../../config/db-context";
-import { ProductMetalOption } from "../../../product-metal-option.model";
-import { ProductWish } from "../../../produc-wish-list.model";
+import { ProductMetalOption } from "../../product-metal-option.model";
+import { ProductWish } from "../../produc-wish-list.model";
 
 export const SizeData = dbContext.define("items_sizes", {
   id: {

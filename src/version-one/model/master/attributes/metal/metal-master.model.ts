@@ -1,8 +1,7 @@
 import { DATE, INTEGER, STRING, FLOAT } from "sequelize";
 import dbContext from "../../../../../config/db-context";
-import { ProductMetalOption } from "../../../../product-metal-option.model";
+import { ProductMetalOption } from "../../../product-metal-option.model";
 import { MetalGroupMaster } from "./metal-group-master.model";
-import { ConfigProductMetals } from "../../../../config-product-metal.model";
 
 export const MetalMaster = dbContext.define("metal_masters", {
   id: {
@@ -68,8 +67,4 @@ MetalMaster.hasMany(ProductMetalOption, {
 MetalMaster.hasMany(MetalGroupMaster, {
   foreignKey: "id_metal",
   as: "Metal_masters",
-});
-MetalMaster.hasOne(ConfigProductMetals, {
-  foreignKey: "metal_id",
-  as: "metal",
 });

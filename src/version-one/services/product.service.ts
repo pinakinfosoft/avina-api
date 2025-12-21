@@ -143,11 +143,6 @@ import { SystemConfiguration } from "../model/system-configuration.model";
 import { GoldKarat } from "../model/master/attributes/metal/gold-karat.model";
 import { StockChangeLog } from "../model/stock-change-log.model";
 import { BrandData } from "../model/master/attributes/brands.model";
-import { Offers } from "../model/offer-discount/offer.model";
-import { ConfigProduct } from "../model/config-product.model";
-import { ConfigProductMetals } from "../model/config-product-metal.model";
-import { ConfigProductDiamonds } from "../model/config-product-diamonds.model";
-import { ConfigCartProduct } from "../model/config-cart-product.model";
 import { ProductSearchHistories } from "../model/product-search-histories.model";
 import { DiamondCaratSize } from "../model/master/attributes/caratSize.model";
 import { MetalMaster } from "../model/master/attributes/metal/metal-master.model";
@@ -5826,13 +5821,7 @@ export const wishlistCartListCount = async (req: Request) => {
       where: { user_id: user_id, },
     });
 
-    const config_cart_list_count = await ConfigCartProduct.count({
-      where: { user_id: user_id, },
-    });
-
-    const totalCartCount = cart_list_count + config_cart_list_count;
-
-    return resSuccess({ data: { wish_list_count, totalCartCount } });
+    return resSuccess({ data: { wish_list_count, cart_list_count } });
   } catch (error) {
     throw error;
   }
@@ -5979,102 +5968,7 @@ export const searchProductGlobally = async (req: any) => {
     throw error;
   }
 };
-/* config product find based on the sku */
 
-export const getBySKUConfigProductDetails = async (req: Request) => {
-  try {
-    const { slug } = req.params;
-    const configPRoductExit = await ConfigProduct.findOne({
-      where: { slug: { [Op.iLike]: `${slug}` }, is_deleted: DeletedStatus.No, },
-    });
-
-    if (!(configPRoductExit && configPRoductExit.dataValues)) {
-      return resNotFound({ message: PRODUCT_NOT_FOUND });
-    }
-
-    const product:any = await ConfigProduct.findOne({
-      where: { slug: { [Op.iLike]: `${slug}` }, is_deleted: DeletedStatus.No, },
-      attributes: [
-        "id",
-        "shank_type_id",
-        "side_setting_id",
-        "head_type_id",
-        "head_no",
-        "shank_no",
-        "band_no",
-        "ring_no",
-        "style_no",
-        "product_title",
-        "product_sort_des",
-        "product_long_des",
-        "sku",
-        "center_dia_cts",
-        "center_dia_size",
-        "center_dia_shape_id",
-        "center_dia_clarity_id",
-        "center_dia_cut_id",
-        "center_dia_mm_id",
-        "center_dia_color",
-        "slug",
-        "center_diamond_group_id",
-        "laber_charge",
-        "product_type",
-        "product_total_diamond",
-        "center_dia_type",
-      ],
-      include: [
-        {
-          
-          model: DiamondGroupMaster,
-          as: "cender_diamond",
-          attributes: ["id_stone"],
-          required:false,
-        },
-        {
-          required: false,
-          model: ConfigProductMetals,
-          as: "CPMO",
-          attributes: [
-            "id",
-            "config_product_id",
-            "metal_id",
-            "karat_id",
-            "metal_tone",
-            "metal_wt",
-            "head_shank_band",
-            "labor_charge",
-          ],
-        },
-        {
-          required: false,
-          model: ConfigProductDiamonds,
-          as: "CPDO",
-          attributes: [
-            "id",
-            "config_product_id",
-            "product_type",
-            "dia_cts_individual",
-            "dia_count",
-            "dia_cts",
-            "dia_size",
-            "id_diamond_group",
-            "dia_weight",
-            "dia_shape",
-            "dia_stone",
-            "dia_color",
-            "dia_mm_size",
-            "dia_clarity",
-            "dia_cuts",
-          ],
-        },
-      ],
-    });
-
-    return resSuccess({ data: product });
-  } catch (error) {
-    throw error;
-  }
-};
 
 /* product add and edit with variant data and without variant --- single product and watch product manage in one */
 

@@ -4,7 +4,6 @@ import {
   configuratorDropDownData,
   dashboardAPI,
   publicConfiguratorDropDownData,
-  updateBirthstoneProductTitleSlug as updateBirthstoneProductTitleSlug,
 } from "../../services/master/attributes/product-Add.service";
 import {
   addCity,
@@ -288,20 +287,6 @@ export const publicConfiguratorDropDownDataFn: RequestHandler = (req, res) => {
     res,
     publicConfiguratorDropDownData(req),
     "publicConfiguratorDropDownDataFn"
-  );
-};
-
-///////////---------- updateBirthstoneProductTitleSlug ---------////////
-
-export const updateBirthstoneProductTitleSlugFn: RequestHandler = (
-  req,
-  res
-) => {
-  callServiceMethod(
-    req,
-    res,
-    updateBirthstoneProductTitleSlug(req),
-    "updateBirthstoneProductTitleSlugFn"
   );
 };
 

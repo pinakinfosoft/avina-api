@@ -1,7 +1,7 @@
 import { DATE, INTEGER, STRING } from "sequelize";
 import dbContext from "../../../../config/db-context";
-import { Image } from "../../../image.model";
-import { ProductDiamondOption } from "../../../product-diamond-option.model";
+import { Image } from "../../image.model";
+import { ProductDiamondOption } from "../../product-diamond-option.model";
 
 export const StoneData = dbContext.define("gemstones", {
   id: {

@@ -42,7 +42,6 @@ import { Action } from "../model/action.model";
 import { MenuItem } from "../model/menu-items.model";
 import { RolePermission } from "../model/role-permission.model";
 import { RolePermissionAccess } from "../model/role-permission-access.model";
-import { Themes } from "../model/theme/themes.model";
 import { CompanyInfo } from "../model/companyinfo.model";
 import { RolePermissionAccessAuditLog } from "../model/role-permission-access-audit-log.model";
 import dbContext from "../../config/db-context";
@@ -441,7 +440,7 @@ export const getAllMenuItems = async (req: Request) => {
     });
 
     
-    const configData = await fetchConfigurationByKey(SYSTEM_CONFIGURATIONS_KEYS.VIEW_ACCESS_ID_ACTION, req);
+    const configData = await fetchConfigurationByKey(SYSTEM_CONFIGURATIONS_KEYS.VIEW_ACCESS_ID_ACTION);
     if (configData.code !== DEFAULT_STATUS_CODE_SUCCESS) return configData;
     const idAction = configData.data.dataValues.config_value;
 
@@ -450,71 +449,6 @@ export const getAllMenuItems = async (req: Request) => {
       attributes: ["id_home_page"],
     });
 
-    let templateList = [];
-    let deletedList = [];
-    if (!findHomePage?.dataValues?.id_home_page) {
-      templateList = Object.values(TEMPLATE_MENU);
-    } else {
-      templateList = Object.values(TEMPLATE_MENU);
-      const templateKey = await Themes.findOne({
-        where: {
-          id: findHomePage.dataValues.id_home_page,
-          section_type: ThemeSectionType.HomePage,
-        },
-        attributes: ["key"],
-      });
-  
-       deletedList = templateList.filter((item:any) => item != TEMPLATE_MENU[templateKey.dataValues.key])
-      templateList = Object.values(deletedList);
-    }
-    const decryptedAppKey = JSON.parse(await decryptRequestData(APP_KEY));
-    const decryptedAppMenu = JSON.parse(await decryptRequestData(APP_MENU));
-    const isClientKeyMatched = req.body.session_res.client_key === decryptedAppKey;
-        let isSuperAdmin = false;
-        let accessibleMenuIds:any = [];
-        let applyIdFilter = false;
-        let skipAllRestrictions = false;
-        if (
-          appUser.dataValues.user_type === USER_TYPE.Administrator &&
-          appUser.dataValues.is_super_admin === true
-        ) {
-          skipAllRestrictions = true;
-        } else if (
-          appUser.dataValues.user_type === USER_TYPE.BusinessUser &&
-          appUser.dataValues.is_super_admin === true
-        ) {
-          isSuperAdmin = true;
-
-          // Get accessible menu item IDs from role permissions
-          const permissionedIdsRaw = await RolePermission.findAll({
-            where: {
-              id_role: appUser.dataValues.id_role,
-              is_active: ActiveStatus.Active,
-            },
-            include: [
-              {
-                model: RolePermissionAccess,
-                as: "RPA",
-                where: {
-                  access: AccessRolePermission.Yes,
-                },
-                include: [
-                  {
-                    model: Action,
-                    as: "action",
-                    attributes: ["id", "action_name"],
-                    required: false,
-                  },
-                ],
-              },
-            ],
-          });
-
-          accessibleMenuIds = [
-            ...new Set(permissionedIdsRaw.map((rpa: any) => rpa.id_menu_item)),
-          ];
-          applyIdFilter = accessibleMenuIds.length > 0;
-        }
 
 
     let where: any[] = [];
@@ -523,16 +457,7 @@ export const getAllMenuItems = async (req: Request) => {
       where = [
         { is_deleted: DeletedStatus.No },
         { is_active: ActiveStatus.Active },{
-        [Op.and]: [
-            Sequelize.where(
-              Sequelize.fn("LOWER", Sequelize.col("name")),
-              { [Op.ne]: isClientKeyMatched ? "" : decryptedAppMenu }
-            ),
-            Sequelize.where(
-              Sequelize.fn("LOWER", Sequelize.col("name")),
-              { [Op.notIn]: isClientKeyMatched ? "" : templateList }
-            ),
-          ]
+        
         }
       ];
   
@@ -1119,7 +1044,7 @@ export const getUserAccessMenuItems = async (req: Request) => {
       where: { id: id_app_user, is_active: ActiveStatus.Active, is_deleted: DeletedStatus.No },
     });
 
-    const configData = await fetchConfigurationByKey(SYSTEM_CONFIGURATIONS_KEYS.VIEW_ACCESS_ID_ACTION, req);
+    const configData = await fetchConfigurationByKey(SYSTEM_CONFIGURATIONS_KEYS.VIEW_ACCESS_ID_ACTION);
     if (configData.code !== DEFAULT_STATUS_CODE_SUCCESS) return configData;
     const idAction = configData.data.dataValues.config_value;
 
@@ -1128,23 +1053,7 @@ export const getUserAccessMenuItems = async (req: Request) => {
       attributes: ["id_home_page"],
     });
 
-    let templateList = [];
-    let deletedList = [];
-    if (!findHomePage?.dataValues?.id_home_page) {
-      templateList = Object.values(TEMPLATE_MENU);
-    } else {
-      templateList = Object.values(TEMPLATE_MENU);
-      const templateKey = await Themes.findOne({
-        where: {
-          id: findHomePage.dataValues.id_home_page,
-          section_type: ThemeSectionType.HomePage,
-        },
-        attributes: ["key"],
-      });
-  
-       deletedList = templateList.filter((item:any) => item != TEMPLATE_MENU[templateKey.dataValues.key])
-      templateList = Object.values(deletedList);
-    }
+    
 
     const isAdministrator = user_type === USER_TYPE.Administrator;
 
@@ -1163,32 +1072,6 @@ export const getUserAccessMenuItems = async (req: Request) => {
       });
       return resSuccess({ data: allMenus });
     }
-
-    // Get accessible menu item IDs from role permissions
-    const permissionedIdsRaw = await RolePermission.findAll({
-      where: {
-        id_role,
-        is_active: ActiveStatus.Active,
-      },
-      include: [
-        {
-          model: RolePermissionAccess,
-          as: "RPA",
-          where: {
-            access: AccessRolePermission.Yes,
-          },
-          include: [
-            {
-              model: Action,
-              as: "action",
-              attributes: ["id", "action_name"],
-              required: false
-            },
-          ],
-        },
-      ],
-    });
-
 
     const whereConditions: any = {
       is_deleted: DeletedStatus.No,
